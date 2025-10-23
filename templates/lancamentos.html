@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Lançamentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo.css') }}">
+</head>
+<body class="{% if usuario.dark_mode %}dark-mode{% endif %}">
+</head>
+<body class="{% if usuario.dark_mode %}dark-mode{% endif %}">
+    <div class="container mt-4">
+        <h2 class="text-center mb-4">Registrar Lançamento</h2>
+
+        <div class="card shadow-sm mb-4">
+            <div class="card-body">
+                <form method="POST" action="/lancamentos">
+                    <div class="mb-3">
+                        <label for="mes" class="form-label">Mês:</label>
+                        <select name="mes" id="mes" class="form-select" required>
+                            <option value="" disabled selected>Selecione o mês</option>
+                            {% set meses = [
+                                ('01', 'Janeiro'), ('02', 'Fevereiro'), ('03', 'Março'), ('04', 'Abril'),
+                                ('05', 'Maio'), ('06', 'Junho'), ('07', 'Julho'), ('08', 'Agosto'),
+                                ('09', 'Setembro'), ('10', 'Outubro'), ('11', 'Novembro'), ('12', 'Dezembro')
+                            ] %}
+                            {% for valor, nome in meses %}
+                                <option value="{{ valor }}">{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição:</label>
+                        <input type="text" id="descricao" name="descricao" class="form-control" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria:</label>
+                        <select name="categoria" id="categoria" class="form-select" required>
+                            <option value="" disabled selected>Selecione a categoria</option>
+                            {% for cat in categorias %}
+                                <option value="{{ cat }}">{{ cat }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo:</label>
+                        <select id="tipo" name="tipo" class="form-select" required>
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="valor" class="form-label">Valor:</label>
+                        <input type="text" id="valor" name="valor" class="form-control" placeholder="0,00" required oninput="formatarValor(this)">
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% set nomes_meses = {
+            '01': 'Janeiro', '02': 'Fevereiro', '03': 'Março', '04': 'Abril',
+            '05': 'Maio', '06': 'Junho', '07': 'Julho', '08': 'Agosto',
+            '09': 'Setembro', '10': 'Outubro', '11': 'Novembro', '12': 'Dezembro'
+        } %}
+
+        {% for ano, meses in dados_agrupados.items() %}
+            <h5 class="mt-4">{{ ano }}</h5>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for mes in meses %}
+                    <button class="btn btn-outline-primary" onclick="mostrarLancamento('{{ ano }}-{{ mes }}')">
+                        {{ nomes_meses[mes] }}
+                    </button>
+                {% endfor %}
+            </div>
+            {% for mes, registros in meses.items() %}
+                <div id="lancamento-{{ ano }}-{{ mes }}" class="lancamento-mes">
+                    <ul class="list-group mb-4">
+                        {% for id, data, descricao, categoria, tipo, valor in registros %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <strong>{{ tipo|capitalize }}</strong> - {{ categoria }}{% if descricao %} - {{ descricao }}{% endif %}: R$ {{ valor|format_currency }}
+                                </span>
+                                <span>
+                                    <a href="/editar_lancamento/{{ id }}" class="btn btn-sm btn-outline-primary me-1">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <a href="/excluir_lancamento/{{ id }}" class="btn btn-sm btn-outline-danger">
+                                        <i class="bi bi-trash3"></i>
+                                    </a>
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <script>
+    function formatarValor(input) {
+        let valor = input.value.replace(/\D/g, '');
+        valor = (parseInt(valor, 10) || 0).toString().padStart(3, '0');
+        let reais = valor.slice(0, -2);
+        let centavos = valor.slice(-2);
+        input.value = reais + ',' + centavos;
+    }
+
+    function mostrarLancamento(id) {
+        document.querySelectorAll('.lancamento-mes').forEach(div => {
+            div.style.display = 'none';
+        });
+        const alvo = document.getElementById('lancamento-' + id);
+        if (alvo) {
+            alvo.style.display = 'block';
+        }
+    }
+    </script>
+
+    <!-- Barra inferior de navegação -->
+    <nav class="navbar fixed-bottom bg-primary">
+        <div class="container-fluid d-flex justify-content-around text-white">
+            <a href="/dashboard" class="text-white text-center text-decoration-none">
+                <i class="bi bi-house-fill fs-4"></i><br>Dashboard
+            </a>
+            <a href="/orcamentos" class="text-white text-center text-decoration-none">
+                <i class="bi bi-calendar-check-fill fs-4"></i><br>Orçamentos
+            </a>
+            <a href="/lancamentos" class="text-white text-center text-decoration-none">
+                <i class="bi bi-cash-stack fs-4"></i><br>Lançamentos
+            </a>
+            <a href="/graficos" class="text-white text-center text-decoration-none">
+                <i class="bi bi-bar-chart-fill fs-4"></i><br>Relatórios
+            </a>
+            <a href="/categorias" class="text-white text-center text-decoration-none">
+                <i class="bi bi-tags-fill fs-4"></i><br>Categorias
+            </a>
+            <a href="/perfil" class="text-white text-center text-decoration-none">
+                <i class="bi bi-person-circle fs-4"></i><br>Perfil
+            </a>
+        </div>
+    </nav>
+</body>
+</html>
