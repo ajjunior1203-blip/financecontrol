@@ -118,7 +118,7 @@ def cadastro():
                 senha_hash = generate_password_hash(senha)
                 cursor.execute('''
                     INSERT INTO usuarios (username, senha, nome, email, montante, reserva, dark_mode, banco_montante, banco_reserva, foto_url)
-                    VALUES (%s, %s, '', '', 0, 0, 0, '', '', '')
+                    VALUES (%s, %s, '', '', 0, 0, FALSE, '', '', '')
                 ''', (usuario, senha_hash))
                 conn.commit()
                 conn.close()
@@ -252,7 +252,7 @@ def cadastro():
                 senha_hash = generate_password_hash(senha)
                 cursor.execute('''
                     INSERT INTO usuarios (username, senha, nome, email, montante, reserva, dark_mode, banco_montante, banco_reserva, foto_url)
-                    VALUES (%s, %s, '', '', 0, 0, 0, '', '', '')
+                    VALUES (%s, %s, '', '', 0, 0, FALSE, '', '', '')
                 ''', (usuario, senha_hash))
                 conn.commit()
                 conn.close()
