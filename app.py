@@ -144,59 +144,66 @@ def conectar():
 def criar_tabelas():
     conn = conectar()
     cursor = conn.cursor()
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS usuarios (
             id SERIAL PRIMARY KEY,
-            username TEXT UNIQUE,
-            senha TEXT,
+            username TEXT UNIQUE NOT NULL,
+            senha TEXT NOT NULL,
             nome TEXT,
             email TEXT,
             montante REAL DEFAULT 0,
             reserva REAL DEFAULT 0,
-            dark_mode INTEGER DEFAULT 0,
+            dark_mode BOOLEAN DEFAULT FALSE,
             banco_montante TEXT,
             banco_reserva TEXT,
             foto_url TEXT
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS investimentos (
             id SERIAL PRIMARY KEY,
-            usuario_id INTEGER,
+            usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
             tipo TEXT,
             codigo TEXT,
             quantidade INTEGER,
             valor_unitario REAL
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS orcamentos (
             id SERIAL PRIMARY KEY,
-            usuario_id INTEGER,
+            usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
             mes TEXT,
             categoria TEXT,
             valor REAL
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS lancamentos (
             id SERIAL PRIMARY KEY,
-            usuario_id INTEGER,
-            data TEXT,
+            usuario_id INTEGER REFERENCES usuarios(id) ON DELETE CASCADE,
+            data DATE,
             descricao TEXT,
             categoria TEXT,
-            tipo TEXT,
+            tipo TEXT CHECK (tipo IN ('entrada', 'saida')),
             valor REAL
         )
     ''')
+
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS categorias (
             id SERIAL PRIMARY KEY,
-            nome TEXT UNIQUE
+            nome TEXT UNIQUE NOT NULL
         )
     ''')
+
     conn.commit()
     conn.close()
+
 
 @app.template_filter('format_currency')
 def format_currency(value):
