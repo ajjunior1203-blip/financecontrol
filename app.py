@@ -99,7 +99,11 @@ def dashboard():
     conn.close()
     
     saldo = 0.0  # ou algum valor calculado do banco
-    return render_template('dashboard.html', usuario=usuario, saldo=saldo)
+    orcamento_planejado = 0.0
+    gasto_real = 0.0
+    return render_template('dashboard.html', usuario=usuario, saldo=saldo,
+                       orcamento_planejado=orcamento_planejado,
+                       gasto_real=gasto_real)
 
 
 @app.route('/orcamentos', methods=['GET', 'POST'])

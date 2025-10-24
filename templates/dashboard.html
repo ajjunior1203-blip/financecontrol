@@ -45,7 +45,11 @@
                         <i class="bi bi-clipboard-data card-icon text-success me-3"></i>
                         <div>
                             <h5 class="mb-0">Orçamento do Mês</h5>
-                            <p class="mb-0">R$ {{ orcamento_planejado|format_currency }} planejado / R$ {{ gasto_real|format_currency }} usado</p>
+                            <p class="mb-0">
+  R$ {{ orcamento_planejado|default(0)|format_currency }} planejado /
+  R$ {{ gasto_real|default(0)|format_currency }} usado
+</p>
+
                         </div>
                     </div>
                 </div>
