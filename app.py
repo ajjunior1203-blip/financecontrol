@@ -97,8 +97,10 @@ def dashboard():
     resultado = cursor.fetchone()
     usuario = {'dark_mode': bool(resultado[0])} if resultado else {'dark_mode': False}
     conn.close()
+    
+    saldo = 0.0  # ou algum valor calculado do banco
+    return render_template('dashboard.html', usuario=usuario, saldo=saldo)
 
-    return render_template('dashboard.html', usuario=usuario)
 
 @app.route('/orcamentos', methods=['GET', 'POST'])
 def orcamentos():
