@@ -204,7 +204,6 @@ def criar_tabelas():
     conn.commit()
     conn.close()
 
-
 @app.template_filter('format_currency')
 def format_currency(value):
     return f"{value:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
