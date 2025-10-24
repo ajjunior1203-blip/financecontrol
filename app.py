@@ -535,6 +535,7 @@ def excluir_categoria(id):
     conn.close()
     return redirect('/categorias')
 
+criar_tabelas()
+
 if __name__ == '__main__':
-    criar_tabelas()
     app.run(debug=True)
