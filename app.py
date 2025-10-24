@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, session
-import sqlite3
+import psycopg2
 from datetime import datetime
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -11,7 +11,7 @@ UPLOAD_FOLDER = 'static/img'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def conectar():
-    return sqlite3.connect('database.db')
+    return psycopg2.connect(os.getenv("DATABASE_URL"))
 
 def criar_tabelas():
     conn = conectar()
