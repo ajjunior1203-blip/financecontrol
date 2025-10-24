@@ -376,6 +376,13 @@ def excluir_categoria(id):
 
     return redirect('/categorias')
 
+@app.route('/perfil')
+def perfil():
+    if 'usuario_id' not in session:
+        return redirect('/login')
+    return render_template('perfil.html')
+
+
 # Criação de tabelas no início da aplicação
 criar_tabelas()
 
